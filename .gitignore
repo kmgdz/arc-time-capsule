@@ -1,0 +1,34 @@
+# Dependencies and build output
+node_modules
+dist
+dist-devpreview
+*.tsbuildinfo
+
+# Environment and secrets (keep .env.example tracked)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.keystore
+*.jks
+keystore/
+keystores/
+UTC--*
+.circle/
+recovery_file*
+
+# Local tooling and logs
+console.jsonl
+traces.jsonl
+.agents
+/lib
+
+# Foundry build output
+contracts/out
+contracts/cache
+
+# Deployment metadata written by the deploy tooling
+contracts/contract-metadata/

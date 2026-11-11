@@ -1,0 +1,90 @@
+const capsuleTuple = [
+  { name: 'id', type: 'uint256' },
+  { name: 'creator', type: 'address' },
+  { name: 'createdAt', type: 'uint64' },
+  { name: 'unlockAt', type: 'uint64' },
+  { name: 'withdrawn', type: 'bool' },
+  { name: 'amount', type: 'uint256' },
+  { name: 'message', type: 'string' },
+] as const
+
+export const timeCapsuleAbi = [
+  {
+    type: 'function',
+    name: 'createCapsule',
+    stateMutability: 'payable',
+    inputs: [
+      { name: 'message', type: 'string' },
+      { name: 'unlockAt', type: 'uint64' },
+    ],
+    outputs: [{ name: 'id', type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'withdraw',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'id', type: 'uint256' }],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'getCapsule',
+    stateMutability: 'view',
+    inputs: [{ name: 'id', type: 'uint256' }],
+    outputs: [{ name: '', type: 'tuple', components: capsuleTuple }],
+  },
+  {
+    type: 'function',
+    name: 'getTotalCapsules',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'isUnlocked',
+    stateMutability: 'view',
+    inputs: [{ name: 'id', type: 'uint256' }],
+    outputs: [{ name: '', type: 'bool' }],
+  },
+  {
+    type: 'function',
+    name: 'getLatest',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'offset', type: 'uint256' },
+      { name: 'limit', type: 'uint256' },
+    ],
+    outputs: [{ name: '', type: 'tuple[]', components: capsuleTuple }],
+  },
+  {
+    type: 'event',
+    name: 'CapsuleCreated',
+    inputs: [
+      { name: 'id', type: 'uint256', indexed: true },
+      { name: 'creator', type: 'address', indexed: true },
+      { name: 'unlockAt', type: 'uint64', indexed: false },
+      { name: 'amount', type: 'uint256', indexed: false },
+      { name: 'message', type: 'string', indexed: false },
+    ],
+  },
+  {
+    type: 'event',
+    name: 'FundsWithdrawn',
+    inputs: [
+      { name: 'id', type: 'uint256', indexed: true },
+      { name: 'creator', type: 'address', indexed: true },
+      { name: 'amount', type: 'uint256', indexed: false },
+    ],
+  },
+  { type: 'error', name: 'EmptyMessage', inputs: [] },
+  { type: 'error', name: 'MessageTooLong', inputs: [] },
+  { type: 'error', name: 'UnlockTimeInPast', inputs: [] },
+  { type: 'error', name: 'LockTooLong', inputs: [] },
+  { type: 'error', name: 'CapsuleNotFound', inputs: [] },
+  { type: 'error', name: 'NotCreator', inputs: [] },
+  { type: 'error', name: 'StillLocked', inputs: [] },
+  { type: 'error', name: 'AlreadyWithdrawn', inputs: [] },
+  { type: 'error', name: 'NothingToWithdraw', inputs: [] },
+  { type: 'error', name: 'TransferFailed', inputs: [] },
+] as const
