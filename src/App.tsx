@@ -1,18 +1,57 @@
 import { useCallback, useState } from 'react'
+import { useAccount } from 'wagmi'
 import { Header } from '@/components/Header'
 import { NetworkGuard } from '@/components/NetworkGuard'
 import { CreateCapsuleForm } from '@/components/CreateCapsuleForm'
-import { Gallery } from '@/components/Gallery'
-import { useCapsules } from '@/hooks/useCapsules'
+import { Gallery, type GalleryView } from '@/components/Gallery'
+import { PAGE_SIZE, useCapsules } from '@/hooks/useCapsules'
+import { useMyCapsules } from '@/hooks/useMyCapsules'
 
 export default function App() {
+  const { address } = useAccount()
+  const [wanted, setWanted] = useState<GalleryView>('all')
   const [page, setPage] = useState(0)
-  const { capsules, total, pageCount, isLoading, isError, refetch } = useCapsules(page)
+
+  // "My capsules" needs a connected wallet; without one the gallery shows everything.
+  const view: GalleryView = wanted === 'mine' && address !== undefined ? 'mine' : 'all'
+
+  const all = useCapsules(view === 'all' ? page : 0)
+  const mine = useMyCapsules(address, all.total, view === 'mine')
+
+  const refetchAll = all.refetch
+  const refetchMine = mine.refetch
+  const refetch = useCallback(() => {
+    refetchAll()
+    void refetchMine()
+  }, [refetchAll, refetchMine])
 
   const handleCreated = useCallback(() => {
     setPage(0)
     refetch()
   }, [refetch])
+
+  const handleView = useCallback((next: GalleryView) => {
+    setWanted(next)
+    setPage(0)
+  }, [])
+
+  const mineCount = mine.capsules.length
+  const shown =
+    view === 'mine'
+      ? {
+          capsules: mine.capsules.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
+          total: mine.isLoading ? undefined : mineCount,
+          pageCount: Math.max(1, Math.ceil(mineCount / PAGE_SIZE)),
+          isLoading: mine.isLoading,
+          isError: mine.isError || all.isError,
+        }
+      : {
+          capsules: all.capsules,
+          total: all.total,
+          pageCount: all.pageCount,
+          isLoading: all.isLoading,
+          isError: all.isError,
+        }
 
   return (
     <div className="min-h-dvh bg-abyss font-sans text-salt">
@@ -34,12 +73,15 @@ export default function App() {
             <CreateCapsuleForm onCreated={handleCreated} />
           </div>
           <Gallery
-            capsules={capsules}
-            total={total}
+            capsules={shown.capsules}
+            total={shown.total}
             page={page}
-            pageCount={pageCount}
-            isLoading={isLoading}
-            isError={isError}
+            pageCount={shown.pageCount}
+            isLoading={shown.isLoading}
+            isError={shown.isError}
+            view={view}
+            canViewMine={address !== undefined}
+            onView={handleView}
             onPage={setPage}
             onRefetch={refetch}
           />

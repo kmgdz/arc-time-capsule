@@ -6,6 +6,8 @@ import { useNow } from '@/hooks/useNow'
 import type { Capsule } from '@/lib/capsule'
 import { CapsuleCard } from './CapsuleCard'
 
+export type GalleryView = 'all' | 'mine'
+
 interface Props {
   capsules: readonly Capsule[]
   total: number | undefined
@@ -13,6 +15,9 @@ interface Props {
   pageCount: number
   isLoading: boolean
   isError: boolean
+  view: GalleryView
+  canViewMine: boolean
+  onView: (view: GalleryView) => void
   onPage: (page: number) => void
   onRefetch: () => void
 }
@@ -20,7 +25,19 @@ interface Props {
 const pagerButton =
   'inline-flex min-h-11 items-center gap-1 rounded-ctl border border-tide px-4 text-sm text-salt transition-colors hover:bg-deep disabled:opacity-40 disabled:hover:bg-transparent'
 
-export function Gallery({ capsules, total, page, pageCount, isLoading, isError, onPage, onRefetch }: Props) {
+export function Gallery({
+  capsules,
+  total,
+  page,
+  pageCount,
+  isLoading,
+  isError,
+  view,
+  canViewMine,
+  onView,
+  onPage,
+  onRefetch,
+}: Props) {
   const now = useNow()
   const deployed = CONTRACT_ADDRESS !== undefined
   const hasItems = capsules.length > 0
@@ -37,7 +54,41 @@ export function Gallery({ capsules, total, page, pageCount, isLoading, isError, 
           </h2>
           <p className="mt-1 text-sm text-mist">Newest first. Every capsule is readable by anyone.</p>
         </div>
-        {total !== undefined && <span className="shrink-0 text-sm tabular-nums text-mist">{total} total</span>}
+        {total !== undefined && (
+          <span className="shrink-0 text-sm tabular-nums text-mist">{view === 'mine' ? `${total} yours` : `${total} total`}</span>
+        )}
+      </div>
+
+      <div
+        className="grid w-full max-w-xs grid-cols-2 gap-1 rounded-ctl border border-tide bg-abyss p-1"
+        role="radiogroup"
+        aria-label="Which capsules to show"
+      >
+        <button
+          type="button"
+          role="radio"
+          aria-checked={view === 'all'}
+          onClick={() => onView('all')}
+          className={`min-h-11 rounded-ctl px-2 text-sm font-medium transition-colors ${
+            view === 'all' ? 'bg-tide text-salt' : 'text-mist hover:text-salt'
+          }`}
+        >
+          All capsules
+        </button>
+        <span title={canViewMine ? undefined : 'Connect a wallet'} className="block">
+          <button
+            type="button"
+            role="radio"
+            aria-checked={view === 'mine'}
+            disabled={!canViewMine}
+            onClick={() => onView('mine')}
+            className={`min-h-11 w-full rounded-ctl px-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:text-mist/60 ${
+              view === 'mine' ? 'bg-tide text-salt' : 'text-mist enabled:hover:text-salt'
+            }`}
+          >
+            My capsules
+          </button>
+        </span>
       </div>
 
       {!deployed && (
@@ -75,7 +126,9 @@ export function Gallery({ capsules, total, page, pageCount, isLoading, isError, 
       {deployed && !isLoading && !isError && !hasItems && (
         <div className="flex flex-col items-center gap-4 rounded-card border border-dashed border-tide px-6 py-12 text-center">
           <img src={logo} alt="" width={48} height={48} className="h-12 w-12" />
-          <p className="text-base font-medium text-salt">No capsules yet. Write the first one.</p>
+          <p className="text-base font-medium text-salt">
+            {view === 'mine' ? 'This wallet has no capsules yet. Write the first one.' : 'No capsules yet. Write the first one.'}
+          </p>
         </div>
       )}
 
