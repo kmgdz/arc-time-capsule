@@ -34,11 +34,37 @@ export function formatCountdown(totalSeconds: number): string {
   return `${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`
 }
 
+/** Local date and time with the time zone name, for example "Nov 20, 2026, 3:00 PM GMT+1". */
 export function formatDateTime(unixSeconds: bigint | number): string {
   return new Date(Number(unixSeconds) * 1000).toLocaleString(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short',
   })
+}
+
+/** The same moment in UTC, which is what the contract and the explorer show. */
+export function formatUtc(unixSeconds: bigint | number): string {
+  return `${new Date(Number(unixSeconds) * 1000).toLocaleString('en-GB', {
+    timeZone: 'UTC',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })} UTC`
+}
+
+/** The device's time zone, for example "Europe/Paris (GMT+1)". */
+export function localTimeZoneLabel(): string {
+  const name = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const offset = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' })
+    .formatToParts(new Date())
+    .find((part) => part.type === 'timeZoneName')?.value
+  return [name, offset ? `(${offset})` : ''].filter(Boolean).join(' ')
 }
 
 /** Value for a datetime-local input (local time, minute precision). */

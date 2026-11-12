@@ -16,6 +16,8 @@ import {
   MAX_MESSAGE_BYTES,
   byteLength,
   formatDateTime,
+  formatUtc,
+  localTimeZoneLabel,
   maxUnlockSeconds,
   parseTxError,
   toLocalInputValue,
@@ -252,6 +254,16 @@ export function CreateCapsuleForm({ onCreated }: { onCreated: () => void }) {
                 </button>
               ))}
             </div>
+            <p className="text-sm text-mist">
+              Times use your device&apos;s time zone: {localTimeZoneLabel()}.
+              {unlockAt ? (
+                <>
+                  {' '}
+                  Opens <span className="text-salt">{formatDateTime(unlockAt)}</span>, which is{' '}
+                  <span className="tabular-nums">{formatUtc(unlockAt)}</span> on the explorer.
+                </>
+              ) : null}
+            </p>
           </div>
         )}
       </fieldset>
