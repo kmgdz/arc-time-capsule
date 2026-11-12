@@ -4,6 +4,12 @@ import { Header } from '@/components/Header'
 import { NetworkGuard } from '@/components/NetworkGuard'
 import { CreateCapsuleForm } from '@/components/CreateCapsuleForm'
 import { Gallery, type GalleryView } from '@/components/Gallery'
+import { StepsStrip } from '@/components/StepsStrip'
+import { HowItWorks } from '@/components/HowItWorks'
+import { BeforeYouStart } from '@/components/BeforeYouStart'
+import { Faq } from '@/components/Faq'
+import { ContractSafety } from '@/components/ContractSafety'
+import { Footer } from '@/components/Footer'
 import { PAGE_SIZE, useCapsules } from '@/hooks/useCapsules'
 import { useMyCapsules } from '@/hooks/useMyCapsules'
 
@@ -66,6 +72,7 @@ export default function App() {
           <p className="mt-4 max-w-xl text-pretty text-base leading-relaxed text-mist sm:text-lg">
             Write it, pick the day it opens, and lock some USDC inside if you like.
           </p>
+          <StepsStrip />
         </section>
 
         <div className="mt-8 grid gap-10 sm:mt-10 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start lg:gap-12">
@@ -86,6 +93,15 @@ export default function App() {
             onRefetch={refetch}
           />
         </div>
+
+        <div className="mt-20 space-y-16 sm:mt-24 sm:space-y-20">
+          <HowItWorks />
+          <BeforeYouStart />
+          <Faq />
+          <ContractSafety />
+        </div>
+
+        <Footer />
       </main>
     </div>
   )

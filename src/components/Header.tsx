@@ -3,14 +3,35 @@ import logo from '@/assets/logo.svg'
 import { NETWORK_LABEL } from '@/config'
 import { shortAddress } from '@/lib/capsule'
 
+const NAV: { href: string; label: string }[] = [
+  { href: '#how-it-works', label: 'How it works' },
+  { href: '#faq', label: 'FAQ' },
+  { href: '#safety', label: 'Safety' },
+]
+
 export function Header() {
   return (
-    <header className="flex items-center justify-between gap-3">
+    <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
       <div className="flex min-w-0 items-center gap-2.5">
         <img src={logo} alt="" width={36} height={36} className="h-9 w-9 shrink-0" />
         <span className="truncate text-base font-semibold tracking-tight text-salt sm:text-lg">Arc Time Capsule</span>
         <span className="hidden text-sm font-medium text-salt sm:inline">{NETWORK_LABEL}</span>
       </div>
+
+      <nav
+        aria-label="Page sections"
+        className="order-last flex w-full items-center gap-5 sm:order-none sm:ml-auto sm:w-auto"
+      >
+        {NAV.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            className="inline-flex min-h-11 items-center text-sm text-mist underline-offset-4 transition-colors hover:text-salt hover:underline"
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
 
       <ConnectKitButton.Custom>
         {({ isConnected, show, address }) => (
