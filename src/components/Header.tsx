@@ -1,4 +1,6 @@
 import { ConnectKitButton } from 'connectkit'
+import { LogOut } from 'lucide-react'
+import { useDisconnect } from 'wagmi'
 import logo from '@/assets/logo.svg'
 import { NETWORK_LABEL } from '@/config'
 import { shortAddress } from '@/lib/capsule'
@@ -10,6 +12,8 @@ const NAV: { href: string; label: string }[] = [
 ]
 
 export function Header() {
+  const { disconnect } = useDisconnect()
+
   return (
     <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
       <div className="flex min-w-0 items-center gap-2.5">
@@ -35,19 +39,33 @@ export function Header() {
 
       <ConnectKitButton.Custom>
         {({ isConnected, show, address }) => (
-          <button
-            type="button"
-            onClick={show}
-            className="inline-flex min-h-11 shrink-0 items-center rounded-ctl border border-tide px-3.5 text-sm font-medium text-salt transition-colors hover:bg-deep sm:px-4"
-          >
-            {isConnected && address ? (
-              <span className="tabular-nums">{shortAddress(address)}</span>
-            ) : (
-              <span>
-                Connect<span className="hidden sm:inline"> wallet</span>
-              </span>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={show}
+              className="inline-flex min-h-11 shrink-0 items-center rounded-ctl border border-tide px-3.5 text-sm font-medium text-salt transition-colors hover:bg-deep sm:px-4"
+            >
+              {isConnected && address ? (
+                <span className="tabular-nums">{shortAddress(address)}</span>
+              ) : (
+                <span>
+                  Connect<span className="hidden sm:inline"> wallet</span>
+                </span>
+              )}
+            </button>
+            {isConnected && (
+              <button
+                type="button"
+                onClick={() => disconnect()}
+                aria-label="Disconnect wallet"
+                title="Disconnect wallet"
+                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-ctl border border-tide px-3 text-sm font-medium text-mist transition-colors hover:bg-deep hover:text-salt"
+              >
+                <LogOut className="h-4 w-4" aria-hidden />
+                <span className="hidden sm:inline">Disconnect</span>
+              </button>
             )}
-          </button>
+          </div>
         )}
       </ConnectKitButton.Custom>
     </header>

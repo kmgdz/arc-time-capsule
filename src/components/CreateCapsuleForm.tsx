@@ -115,8 +115,8 @@ export function CreateCapsuleForm({ onCreated }: { onCreated: () => void }) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    setAttempted(true)
-    if (!CONTRACT_ADDRESS || problem || amount === null) return
+    if (!CONTRACT_ADDRESS) return
+    // Connecting and switching networks come first: they must work even while the form is still empty.
     if (!isConnected) {
       setOpen(true)
       return
@@ -125,6 +125,8 @@ export function CreateCapsuleForm({ onCreated }: { onCreated: () => void }) {
       switchChain({ chainId: CHAIN.id })
       return
     }
+    setAttempted(true)
+    if (problem || amount === null) return
     if (needsConfirm && !confirmed) return
     setLastHash(undefined)
     const contractAddress = CONTRACT_ADDRESS
